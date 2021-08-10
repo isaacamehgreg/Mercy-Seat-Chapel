@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,6 +23,13 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 
-
+//admin create slots
+Route::post('/sunday', function(Request $request){
+   DB::table('sundays')->insert([
+       'title' =>$request->input('title'),
+       'date' =>$request->input('date'),
+       'slot' =>$request->input('slot'),
+   ]);
+})
 
 
