@@ -17,6 +17,7 @@ class CreateAttendeesTable extends Migration
             $table->id();
             $table->integer('user_id');
             $table->integer('sunday_id');
+            $table->boolean('is_confirmed');
             $table->timestamps();
         });
     }

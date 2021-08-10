@@ -25,19 +25,11 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+
+
 //admin get slot
 Route::get('/sunday', function(Request $request){
     return DB::table('sundays')->get();
- });
-
-//admin create slots
-Route::post('/sunday', function(Request $request){
-    DB::table('sundays')->insert([
-        'title' =>$request->input('title'),
-        'date' =>$request->input('date'),
-        'slot' =>$request->input('slot'),
-        'created_at'=> Carbon::now()    
-    ]);
  });
 
 //admin create slots
@@ -72,6 +64,7 @@ Route::post('/attend', function(Request $request){
     DB::table('attendees')->insert([
         'user_id' =>Auth::user()->id,
         'sunday_id' =>$request->input('sunday_id'),
+        'is_confirmed' => false,
         'created_at'=> Carbon::now()    
     ]);
  });
