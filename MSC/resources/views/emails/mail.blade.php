@@ -10,10 +10,11 @@
 </head>
 <body>
     <h1>{{$details['title']}}</h1>
-    <p>{{$details['body']}}</p>
+    <h3>hi {{Auth::user()->name}}</h3>
+    <h3>{{$details['body']}}</h3>
   
-    <a  href="http://google.com">YES</a>|<a href="http://google.com">No</a>
+    <h1><a  href="/yes/{{$details['body']}}">YES</a>  |  <a href="/no/{{$details['body']}}">No</a></h1>
 
-    <h1>Thank You</h1>
+    <h4>Thank You</h4>
 </body>
 </html>

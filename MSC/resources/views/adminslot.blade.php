@@ -181,7 +181,7 @@
                             </div>
                           </td> --}}
                           <td>{{$slot->title}}</td>
-                          <td>12</td>
+                          <td>{{DB::table('attendees')->where('sunday_id',$slot->id)->count()}}</td>
                           <td>{{$slot->date}}</td>
                             @if ($slot->status == 'closed')
                             <td><label class="badge badge-danger">{{$slot->status}}</label></td>
@@ -246,6 +246,7 @@
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+       
                 <button type="submit" class="btn btn-primary">Create</button>
               </div>
             </form>
@@ -290,6 +291,14 @@
               </div>
                <div class="modal-footer row justify-content-lg-between">
                 <a class="btn btn-danger" href="/slot/delete/{{$slot->id}}" >Delete</a>
+    
+                @if ($slot->id == 'closed')
+                <a class="btn btn-warning" href="/slot/open/{{$slot->id}}" >Reopen Slot</a> 
+                @else
+                <a class="btn btn-warning" href="/slot/close/{{$slot->id}}" >Close Slot</a>
+                @endif
+                
+
                 <button class="btn btn-primary" type="submit" >Update</button>
                
               </div>

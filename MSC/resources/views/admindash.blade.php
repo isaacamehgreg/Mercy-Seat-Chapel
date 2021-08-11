@@ -185,7 +185,7 @@
                             </div>
                           </td> --}}
                           <td>{{$slot->slot}}</td>
-                          <td>12</td>
+                          <td>{{DB::table('attendees')->where('sunday_id',$slot->id)->count()}}</td>
                           <td>{{$slot->date}}</td>
                           @if ($slot->status == 'closed')
                           <td><label class="badge badge-danger">{{$slot->status}}</label></td>

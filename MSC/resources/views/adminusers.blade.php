@@ -75,7 +75,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/users">
+            <a class="nav-link" href="/slots">
               <i class="mdi mdi-content-paste menu-icon"></i>
               <span class="menu-title">Slots</span>
             </a>
@@ -247,7 +247,7 @@
 
 
             
-          </div>
+        
         
 
         <!-- content-wrapper ends -->

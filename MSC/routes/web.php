@@ -51,8 +51,8 @@ Route::post('/slot', function(Request $request){
 });
 
 //admin update slots
-Route::post('/slot/update/{id}', function(Request $request){
-    DB::table('slots')->update([
+Route::post('/slot/update/{id}', function(Request $request, $id){
+    DB::table('slots')->where('id',$id)->update([
         'title' =>$request->input('title'),
         'date' =>$request->input('date'),
         'slot' =>$request->input('slot'),
@@ -68,7 +68,13 @@ Route::get('/slot/delete/{id}', function($id){
     return redirect('/slots');
  });
 
-
+ //admin delete slots
+ Route::get('/slot/close/{id}', function($id){
+    DB::table('slots')->where('id',$id)->update([
+        'status' => 'closed'
+    ]);
+    return redirect('/slots');
+ });
 
 
 
@@ -122,6 +128,11 @@ Route::get('/attend/delete/{id}', function($id){
  //attend booking
 Route::get('/attend/{slot_id}', function(Request $request, $slot_id){
 
+    //block double entry
+    if(DB::table('attendees')->where('user_id',Auth::user()->id)->where('sunday_id',$slot_id)->count() > 0){
+        return redirect('/');
+    }
+
     DB::table('attendees')->insert([
         'user_id' =>Auth::user()->id,
         'sunday_id' =>$slot_id,
@@ -131,11 +142,13 @@ Route::get('/attend/{slot_id}', function(Request $request, $slot_id){
 
     //send mail
     $details = [
-        'title' =>"Confirm Attendance",
-        'body' =>'This is to confirm if you will be available for the sunday slot you select'
+        'title' =>"Attendance to ".DB::table('slots')->where('id',$slot_id)->value('title'),
+        'date' =>DB::table('slots')->where('id',$slot_id)->value('title'),
+        'user_id' =>Auth::user()->id,
+        'body' =>'Tank you for book for this service we will notify you by thursday to know if you will be able to make it or not'
     ];
-   Mail::to("isaacamehgreg@gmail.com")->send(new TestMail($details));
-
+   Mail::to(Auth::user()->email)->send(new TestMail($details));
+  
    
     return redirect('/');
  });

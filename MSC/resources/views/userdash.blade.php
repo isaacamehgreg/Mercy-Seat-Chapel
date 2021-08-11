@@ -152,7 +152,7 @@
                   <div class="table-responsive">
                     <table class="table table-striped">
                       <thead>
-                        @foreach ($attendees as $attendee)
+                     
                             
                        
                         <tr>
@@ -166,6 +166,8 @@
                         </tr>
                       </thead>
                       <tbody>
+                        
+                        @foreach ($attendees as $attendee)
                         <tr>
                           <th>{{$attendee->id}}</th>
                           <td>{{DB::table('slots')->where('id',$attendee->sunday_id)->value('title')}}</td>
