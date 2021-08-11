@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/login');
 });
 
 Auth::routes();
@@ -30,33 +30,41 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 
 //admin get slot
-Route::get('/sunday', function(Request $request){
-    return DB::table('sundays')->get();
+Route::get('/slot', function(Request $request){
+    $slots = DB::table('slots')->limit(15)->get();
+    
+    return view('admindash')->with(['slots' => $slots ]);
  });
+ 
 
 //admin create slots
-Route::post('/sunday', function(Request $request){
-   DB::table('sundays')->insert([
+Route::post('/slot', function(Request $request){
+   DB::table('slots')->insert([
        'title' =>$request->input('title'),
        'date' =>$request->input('date'),
        'slot' =>$request->input('slot'),
+       'status'=>'opened',
        'created_at'=> Carbon::now()    
    ]);
+   return redirect('/slot');
 });
 
 //admin update slots
-Route::post('/sunday', function(Request $request){
-    DB::table('sundays')->update([
+Route::post('/slot/update/{id}', function(Request $request){
+    DB::table('slots')->update([
         'title' =>$request->input('title'),
         'date' =>$request->input('date'),
         'slot' =>$request->input('slot'),
+        'status'=>'opened',
         'created_at'=> Carbon::now() 
     ]);
+    return redirect('/slots');
  });
 
  //admin delete slots
-Route::get('/sunday/delete/{id}', function($id){
-    DB::table('sundays')->where('id',$id)->delete();
+Route::get('/slot/delete/{id}', function($id){
+    DB::table('slots')->where('id',$id)->delete();
+    return redirect('/slots');
  });
 
 
@@ -78,3 +86,26 @@ Route::get('/attend/delete/{id}', function($id){
 
 
 Route::get('/mail', [MailController::class, 'sendEmail']);
+
+
+//admin get all  slots
+Route::get('/slots', function(Request $request){
+
+    if(Auth::user()->role != 'admin'){
+    return redirect('/');
+    }
+
+    $slots = DB::table('slots')->paginate(15); 
+    return view('adminslot')->with(['slots' => $slots ]);
+
+ });
+
+
+
+
+
+ //user
+Route::get('/users', function(Request $request){
+    $users= DB::table('users')->get();
+    return view('adminusers')->with(['users' => $users,]);
+ });

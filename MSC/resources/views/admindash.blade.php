@@ -50,7 +50,7 @@
             </a>
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
              
-              <a class="dropdown-item">
+              <a class="dropdown-item" href="/logout">
                 <i class="mdi mdi-logout text-primary"></i>
                 Logout
               </a>
@@ -69,20 +69,20 @@
         <ul class="nav">
 
           <li class="nav-item">
-            <a class="nav-link" href="index.html">
+            <a class="nav-link" href="/">
               <i class="mdi mdi-home menu-icon"></i>
               <span class="menu-title">Dashboard</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="index.html">
+            <a class="nav-link" href="/slots">
               <i class="mdi mdi-content-paste menu-icon"></i>
               <span class="menu-title">Slots</span>
             </a>
           </li>
          
           <li class="nav-item">
-            <a class="nav-link" href="index.html">
+            <a class="nav-link" href="/users">
               <i class="mdi mdi-account-multiple-outline menu-icon"></i>
               <span class="menu-title">Users</span>
             </a>
@@ -100,7 +100,7 @@
                 
                 <div class="d-flex justify-content-between align-items-end flex-wrap">
                 
-                  <button class="btn btn-primary mt-2 mt-xl-0">Create a slot</button>
+                  <button class="btn btn-primary mt-2 mt-xl-0 btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">Create a slot</button>
                 </div>
               </div>
             </div>
@@ -120,7 +120,7 @@
                             <small class="mb-1 text-muted">Opened Slot</small>
                             <div class="dropdown">
                               <a class="btn btn-secondary p-0 bg-transparent border-0 text-dark shadow-none font-weight-medium" href="#" role="button" id="dropdownMenuLinkA" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <h5 class="mr-2 mb-0">45</h5>
+                                <h5 class="mr-2 mb-0">{{DB::table('slots')->where('status','opened')->count()}}</h5>
                               </a>
                              
                             </div>
@@ -130,14 +130,14 @@
                           <i class="mdi  mdi-key mr-3 icon-lg text-danger"></i>
                           <div class="d-flex flex-column justify-content-around">
                             <small class="mb-1 text-muted">Closed Slot</small>
-                            <h5 class="mr-2 mb-0">20</h5>
+                            <h5 class="mr-2 mb-0">{{DB::table('slots')->where('status','closed')->count()}}</h5>
                           </div>
                         </div>
                         <div class="d-flex border-md-right flex-grow-1 align-items-center justify-content-center p-3 item">
                           <i class="mdi mdi-account-multiple-outline mr-3 icon-lg text-success"></i>
                           <div class="d-flex flex-column justify-content-around">
                             <small class="mb-1 text-muted">Total Members</small>
-                            <h5 class="mr-2 mb-0">983</h5>
+                            <h5 class="mr-2 mb-0">{{DB::table('users')->where('role','worker')->orWhere('role','visitor')->count()}}</h5>
                           </div>
                         </div>
                         
@@ -164,7 +164,7 @@
                         <tr>
                         
                           <th>Sundays</th>
-                          <th>Progress</th>
+                          {{-- <th>Progress</th> --}}
                           
                           <th>Slots</th>
                           <th>Attendees</th>
@@ -173,21 +173,29 @@
                         </tr>
                       </thead>
                       <tbody>
+                        @foreach ($slots as $slot)
+                            
+                     
                         <tr>
-                         
-                          <td>Thanksgiving Sunday</td>
-                          <td>
+
+                          <td>{{$slot->title}}</td>
+                          {{-- <td>
                             <div class="progress">
-                              <div class="progress-bar bg-primary" role="progressbar" style="width: 60%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                              <div class="progress-bar bg-primary" role="progressbar" style="width: 60%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="1000"></div>
                             </div>
-                          </td>
-                          <td>40</td>
+                          </td> --}}
+                          <td>{{$slot->slot}}</td>
                           <td>12</td>
-                          <td>May 15, 2015</td>
-                          <td><label class="badge badge-success">open</label></td>
+                          <td>{{$slot->date}}</td>
+                          @if ($slot->status == 'closed')
+                          <td><label class="badge badge-danger">{{$slot->status}}</label></td>
+                          @else
+                          <td><label class="badge badge-success">{{$slot->status}}</label></td>
+                          @endif
+                  
                         </tr>
                    
-                     
+                        @endforeach
                                     
                       </tbody>
                     </table>
@@ -221,6 +229,50 @@
     <!-- page-body-wrapper ends -->
   </div>
   <!-- container-scroller -->
+
+
+
+
+  <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalCenterTitle">Create a slot</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="/slot" method="post">@csrf
+        <div class="modal-body">
+          <div class="card-body">
+      
+            </p>
+            <div class="form-group">
+              <label>Title</label>
+              <input type="text" name="title" class="form-control form-control-lg" placeholder="eg thanksgiving sunday" required aria-label="Username">
+            </div>
+            <div class="form-group">
+              <label>Date</label>
+              <input type="datetime-local" name="date" class="form-control" placeholder="Date" required aria-label="Username">
+
+            </div>
+            <div class="form-group">
+              <label>Slot Space</label>
+              <input type="number" name="slot" class="form-control form-control-sm" required placeholder="Allocate Slot" aria-label="Username">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Create</button>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>
+
+
+
 
   <!-- plugins:js -->
   <script src="vendors/base/vendor.bundle.base.js"></script>

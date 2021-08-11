@@ -13,10 +13,10 @@ class CreateSundaysTable extends Migration
      */
     public function up()
     {
-        Schema::create('sundays', function (Blueprint $table) {
+        Schema::create('slots', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->date('date');
+            $table->dateTime('date');
             $table->integer('slot');
             $table->string('status');
             $table->timestamps();
@@ -30,6 +30,6 @@ class CreateSundaysTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sundays');
+        Schema::dropIfExists('slots');
     }
 }
