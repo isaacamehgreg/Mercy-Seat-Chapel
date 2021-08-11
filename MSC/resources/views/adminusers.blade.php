@@ -50,7 +50,7 @@
             </a>
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
              
-              <a class="dropdown-item">
+              <a class="dropdown-item" href='/logout'>
                 <i class="mdi mdi-logout text-primary"></i>
                 Logout
               </a>
@@ -69,20 +69,20 @@
         <ul class="nav">
 
           <li class="nav-item">
-            <a class="nav-link" href="index.html">
+            <a class="nav-link" href="/">
               <i class="mdi mdi-home menu-icon"></i>
               <span class="menu-title">Dashboard</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="index.html">
+            <a class="nav-link" href="/users">
               <i class="mdi mdi-content-paste menu-icon"></i>
               <span class="menu-title">Slots</span>
             </a>
           </li>
          
           <li class="nav-item">
-            <a class="nav-link" href="index.html">
+            <a class="nav-link" href="/users">
               <i class="mdi mdi-account-multiple-outline menu-icon"></i>
               <span class="menu-title">Users</span>
             </a>
@@ -100,7 +100,7 @@
                 
                 <div class="d-flex justify-content-between align-items-end flex-wrap">
                 
-                  <button class="btn btn-primary mt-2 mt-xl-0">Create a slot</button>
+                 
                 </div>
               </div>
             </div>
@@ -119,9 +119,7 @@
                           <div class="d-flex flex-column justify-content-around">
                             <small class="mb-1 text-muted">Opened Slot</small>
                             <div class="dropdown">
-                              <a class="btn btn-secondary p-0 bg-transparent border-0 text-dark shadow-none font-weight-medium" href="#" role="button" id="dropdownMenuLinkA" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <h5 class="mr-2 mb-0">45</h5>
-                              </a>
+                              <h5 class="mr-2 mb-0">{{DB::table('slots')->where('status','opened')->count()}}</h5>
                              
                             </div>
                           </div>
@@ -130,14 +128,14 @@
                           <i class="mdi  mdi-key mr-3 icon-lg text-danger"></i>
                           <div class="d-flex flex-column justify-content-around">
                             <small class="mb-1 text-muted">Closed Slot</small>
-                            <h5 class="mr-2 mb-0">20</h5>
+                            <h5 class="mr-2 mb-0">{{DB::table('slots')->where('status','closed')->count()}}</h5>
                           </div>
                         </div>
                         <div class="d-flex border-md-right flex-grow-1 align-items-center justify-content-center p-3 item">
                           <i class="mdi mdi-account-multiple-outline mr-3 icon-lg text-success"></i>
                           <div class="d-flex flex-column justify-content-around">
                             <small class="mb-1 text-muted">Total Members</small>
-                            <h5 class="mr-2 mb-0">983</h5>
+                            <h5 class="mr-2 mb-0">{{DB::table('users')->where('role','worker')->orWhere('role','visitor')->count()}}</h5>
                           </div>
                         </div>
                         
@@ -163,29 +161,32 @@
                       <thead>
                         <tr>
                         
-                          <th>Title</th>
+                       
                           <th>Name</th>
                           <th>Email</th>
                           <th>Booked</th>
                           <th>Attended</th>
+                          <th>Missed</th>
                         
                         </tr>
                       </thead>
                       <tbody>
+                        @foreach ($users as $user)
                         <tr>
-                         
-                          <td>Mr</td>
-                          <td>Isaac Ameh</td>
-                          <td>isaacamehgreg@gmail.com</td>
-                          <td>25</td>
-                          <td>10</td>
-                          <td><a class="btn btn-info" href="http://">More</a></td>
-                        </tr>
                    
+                          <td>{{$user->name}}</td>
+                          <td>{{$user->email}}</td>
+                          <td>{{DB::table('attendees')->where('user_id', $user->id)->count()}}</td>
+                          <td>{{DB::table('attendees')->where('user_id', $user->id)->where('is_confirmed', true)->count()}}</td>
+                          <td>{{DB::table('attendees')->where('user_id', $user->id)->where('is_confirmed', false)->count()}}</td>
+                          <td><button class="btn btn-info"  data-toggle="modal" data-target="#exampleModalCenter{{$user->id}}">More</button></td>
+                        </tr>
+                        @endforeach
                      
                                     
                       </tbody>
                     </table>
+                    {{$users->links()}}
                   </div>
                 </div>
               </div>
@@ -194,13 +195,61 @@
 
            
 
-
+            @foreach ($users as $user)
+            <div class="modal fade" id="exampleModalCenter{{$user->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle"> {{$user->name}} </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+              
+                  <div class="modal-body">
+                    <div class="card-body">
+                
+               
+                      <div class="form-group">
+                        <label>Name: </label>
+                          {{$user->name}}
+                      </div>
+                      <div class="form-group">
+                        <label>Email: </label>
+                          {{$user->email}}
+                      </div>
+                      <div class="form-group">
+                        <label>Address: </label>
+                          {{$user->address}}
+                      </div>
+                      <div class="form-group">
+                        <label>Phone: </label>
+                          {{$user->phone}}
+                      </div>
+                      <div class="form-group">
+                        <label>Role: </label>
+                          {{$user->role}}
+                      </div>
+                      
+                      
+                     
+                    </div>
+                  </div>
+           
+      
+                   
+                  </div>
+                </form>
+                </div>
+              </div>
+            </div>
+            @endforeach
 
 
             
           </div>
         
-        </div>
+
         <!-- content-wrapper ends -->
         <!-- partial:partials/_footer.html -->
         <footer class="footer">

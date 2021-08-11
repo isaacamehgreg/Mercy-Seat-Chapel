@@ -46,11 +46,11 @@
           <li class="nav-item nav-profile dropdown">
             <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
     
-              <span class="nav-profile-name">Member</span>
+              <span class="nav-profile-name">{{$user->name}}</span>
             </a>
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
              
-              <a class="dropdown-item">
+              <a class="dropdown-item" href="logout">
                 <i class="mdi mdi-logout text-primary"></i>
                 Logout
               </a>
@@ -72,7 +72,7 @@
        
          
           <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="/user">
               <i class="mdi mdi-account-multiple-outline menu-icon"></i>
               <span class="menu-title">Profile</span>
             </a>
@@ -96,7 +96,7 @@
                 
                 <div class="d-flex justify-content-between align-items-end flex-wrap">
                 
-                  <button class="btn btn-primary mt-2 mt-xl-0">book a service</button>
+                  <button class="btn btn-primary mt-2 mt-xl-0"  data-toggle="modal" data-target="#exampleModalCenter">book a slot</button>
                 </div>
               </div>
             </div>
@@ -116,7 +116,7 @@
                             <small class="mb-1 text-muted">Opened Slot</small>
                             <div class="dropdown">
                               <a class="btn btn-secondary p-0 bg-transparent border-0 text-dark shadow-none font-weight-medium" href="#" role="button" id="dropdownMenuLinkA" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <h5 class="mr-2 mb-0">45</h5>
+                                <h5 class="mr-2 mb-0">{{DB::table('slots')->where('status','opened')->count()}}</h5>
                               </a>
                              
                             </div>
@@ -126,7 +126,7 @@
                           <i class="mdi mdi-book-open-variant mr-3 icon-lg text-danger"></i>
                           <div class="d-flex flex-column justify-content-around">
                             <small class="mb-1 text-muted">Booked Slot</small>
-                            <h5 class="mr-2 mb-0">20</h5>
+                            <h5 class="mr-2 mb-0">{{DB::table('attendees')->where('user_id',Auth::user()->id)->count()}}</h5>
                           </div>
                         </div>
 
@@ -152,26 +152,34 @@
                   <div class="table-responsive">
                     <table class="table table-striped">
                       <thead>
+                        @foreach ($attendees as $attendee)
+                            
+                       
                         <tr>
                         
+                          <th>Slot ID</th>
                           <th>Sundays</th>
                           <th>Date</th>
                           <th>Status</th>
-                          <th>update</th>
+                          
                           <th>cancel</th>
                         </tr>
                       </thead>
                       <tbody>
                         <tr>
-                         
-                          <td>Thanksgiving Sunday</td>
-                          <td>May 15, 2015</td>
-                          <td><label class="badge badge-success">open</label></td>
-                          <td><a class="btn btn-info" href="http://">update booking</a></td>
-                          <td><a class="btn btn-danger" href="http://">cancel booking</a></td>
+                          <th>{{$attendee->id}}</th>
+                          <td>{{DB::table('slots')->where('id',$attendee->sunday_id)->value('title')}}</td>
+                          <td>{{DB::table('slots')->where('id',$attendee->sunday_id)->value('date')}}</td>
+                          @if (DB::table('slots')->where('id',$attendee->sunday_id)->value('date') == 'closed')
+                          <td><label class="badge badge-danger">{{DB::table('slots')->where('id',$attendee->sunday_id)->value('date')}}</label></td>
+                          @else
+                          <td><label class="badge badge-success">{{DB::table('slots')->where('id',$attendee->sunday_id)->value('date')}}</label></td>
+                          @endif
+                          
+                          <td><a class="btn btn-danger" href="/attend/delete/{{$attendee->id}}">cancel booking</a></td>
                         </tr>
                    
-                     
+                        @endforeach
                                     
                       </tbody>
                     </table>
@@ -205,6 +213,36 @@
     <!-- page-body-wrapper ends -->
   </div>
   <!-- container-scroller -->
+
+
+
+
+
+
+  <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalCenterTitle">Modal title</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          ...
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
 
   <!-- plugins:js -->
   <script src="vendors/base/vendor.bundle.base.js"></script>

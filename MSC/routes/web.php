@@ -28,11 +28,11 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 
-
+////////////////////////////////////////////////////////////////////Admin Route
 //admin get slot
 Route::get('/slot', function(Request $request){
     $slots = DB::table('slots')->limit(15)->get();
-    
+
     return view('admindash')->with(['slots' => $slots ]);
  });
  
@@ -68,24 +68,7 @@ Route::get('/slot/delete/{id}', function($id){
  });
 
 
- //user booking
- //attend booking
-Route::post('/attend', function(Request $request){
-    DB::table('attendees')->insert([
-        'user_id' =>Auth::user()->id,
-        'sunday_id' =>$request->input('sunday_id'),
-        'is_confirmed' => false,
-        'created_at'=> Carbon::now()    
-    ]);
- });
 
-//cancel booking
-Route::get('/attend/delete/{id}', function($id){
-    DB::table('attendees')->where('user_id',Auth::user()->id)->where('sunday_id',$id)->delete();
- });
-
-
-Route::get('/mail', [MailController::class, 'sendEmail']);
 
 
 //admin get all  slots
@@ -101,11 +84,44 @@ Route::get('/slots', function(Request $request){
  });
 
 
-
-
-
- //user
+ //users
 Route::get('/users', function(Request $request){
-    $users= DB::table('users')->get();
+    $users= DB::table('users')->paginate(20);
     return view('adminusers')->with(['users' => $users,]);
  });
+
+
+
+
+ 
+////////////////////////////////////////////////////////////////////User Route
+Route::get('user', function () {
+    $user= DB::table('users')->where('id',Auth::user()->id)->first();
+    $slots = DB::table('slots')->get();
+    $attendees = DB::table('attendees')->where('user_id',Auth::user()->id)->paginate(10); 
+    return view('userdash')->with([
+        'user' => $user,
+        'slots'=>$slots,
+        'attendees' =>$attendees
+    ]);
+});
+
+//cancel booking
+Route::get('/attend/delete/{id}', function($id){
+    DB::table('attendees')->where('id',$id)->delete();
+ });
+
+
+ //attend booking
+Route::post('/attend', function(Request $request){
+    DB::table('attendees')->insert([
+        'user_id' =>Auth::user()->id,
+        'sunday_id' =>$request->input('sunday_id'),
+        'is_confirmed' => false,
+        'created_at'=> Carbon::now()    
+    ]);
+ });
+
+
+
+Route::get('/mail', [MailController::class, 'sendEmail']);
