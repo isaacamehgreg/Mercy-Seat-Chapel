@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\MailController;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -73,3 +75,6 @@ Route::post('/attend', function(Request $request){
 Route::get('/attend/delete/{id}', function($id){
     DB::table('attendees')->where('user_id',Auth::user()->id)->where('sunday_id',$id)->delete();
  });
+
+
+Route::get('/mail', [MailController::class, 'sendEmail']);
