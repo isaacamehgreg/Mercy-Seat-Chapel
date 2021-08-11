@@ -171,9 +171,9 @@
                           <td>{{DB::table('slots')->where('id',$attendee->sunday_id)->value('title')}}</td>
                           <td>{{DB::table('slots')->where('id',$attendee->sunday_id)->value('date')}}</td>
                           @if (DB::table('slots')->where('id',$attendee->sunday_id)->value('date') == 'closed')
-                          <td><label class="badge badge-danger">{{DB::table('slots')->where('id',$attendee->sunday_id)->value('date')}}</label></td>
+                          <td><label class="badge badge-danger">{{DB::table('slots')->where('id',$attendee->sunday_id)->value('status')}}</label></td>
                           @else
-                          <td><label class="badge badge-success">{{DB::table('slots')->where('id',$attendee->sunday_id)->value('date')}}</label></td>
+                          <td><label class="badge badge-success">{{DB::table('slots')->where('id',$attendee->sunday_id)->value('status')}}</label></td>
                           @endif
                           
                           <td><a class="btn btn-danger" href="/attend/delete/{{$attendee->id}}">cancel booking</a></td>
@@ -223,17 +223,49 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalCenterTitle">Modal title</h5>
+          <h5 class="modal-title" id="exampleModalCenterTitle">Opened Sundays to Attend</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          ...
+          <div class="card">
+            <div class="card-body">
+           
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Sunday</th>
+                      <th>Date</th>
+                      <th>Slots</th>
+                      <th>Book</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @foreach ($slots as $slot)
+                        
+                    @if (DB::table('attendees')->where('user_id',Auth::user()->id)->where('sunday_id',$slot->id)->count() == 0)
+
+                    <tr>
+                      <td>{{$slot->title}}</td>
+                      <td>{{$slot->date}}</td>
+                      <td class="text-info"> {{$slot->slot}} </td>
+                      <td><a href="/attend/{{$slot->id}}" class="btn btn-danger">Book a Slot</a></td>
+                    </tr>
+
+                    @endif
+                   
+                    @endforeach
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save changes</button>
+         
         </div>
       </div>
     </div>

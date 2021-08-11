@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\MailController;
+use App\Mail\TestMail;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -97,7 +98,7 @@ Route::get('/users', function(Request $request){
 ////////////////////////////////////////////////////////////////////User Route
 Route::get('user', function () {
     $user= DB::table('users')->where('id',Auth::user()->id)->first();
-    $slots = DB::table('slots')->get();
+    $slots = DB::table('slots')->where('status','opened')->get();
     $attendees = DB::table('attendees')->where('user_id',Auth::user()->id)->paginate(10); 
     return view('userdash')->with([
         'user' => $user,
@@ -109,17 +110,34 @@ Route::get('user', function () {
 //cancel booking
 Route::get('/attend/delete/{id}', function($id){
     DB::table('attendees')->where('id',$id)->delete();
+    return redirect('/');
+ });
+
+ Route::get('/logout', function(){
+    Auth::logout();
+    return redirect('/login');
  });
 
 
  //attend booking
-Route::post('/attend', function(Request $request){
+Route::get('/attend/{slot_id}', function(Request $request, $slot_id){
+
     DB::table('attendees')->insert([
         'user_id' =>Auth::user()->id,
-        'sunday_id' =>$request->input('sunday_id'),
+        'sunday_id' =>$slot_id,
         'is_confirmed' => false,
         'created_at'=> Carbon::now()    
     ]);
+
+    //send mail
+    $details = [
+        'title' =>"Confirm Attendance",
+        'body' =>'This is to confirm if you will be available for the sunday slot you select'
+    ];
+   Mail::to("isaacamehgreg@gmail.com")->send(new TestMail($details));
+
+   
+    return redirect('/');
  });
 
 

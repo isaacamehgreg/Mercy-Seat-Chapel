@@ -21,4 +21,7 @@ class MailController extends Controller
        return 'email sent';
    
     }
+
+
+    
 }
