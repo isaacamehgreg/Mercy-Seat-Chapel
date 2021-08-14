@@ -70,7 +70,8 @@
                 </div>
               
                 <div class="text-center mt-4 font-weight-light">
-                  Don't have an account? <a href="/register" class="text-primary">Register</a>
+                  Don't have an account? contact unorthodox solutions
+                  {{-- <a href="/register" class="text-primary">Register</a> --}}
                 </div>
               </form>
             </div>

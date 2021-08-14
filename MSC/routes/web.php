@@ -20,9 +20,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
+Route::get('/admin', function () {
     return redirect('/login');
 });
+
+Route::get('/', function () {
+    return redirect('/book');
+});
+
 
 Auth::routes();
 
@@ -156,3 +161,21 @@ Route::get('/attend/{slot_id}', function(Request $request, $slot_id){
 
 
 Route::get('/mail', [MailController::class, 'sendEmail']);
+
+
+Route::get('/book', function(){
+    
+    return view('book');
+ });
+
+ Route::post('/book', function(){
+    
+    return view('book');
+ });
+
+
+ Route::get('sms', function () {
+     
+
+ });
+ Route::get('sendSMS', [TwilioSMSController::class, 'index']);
