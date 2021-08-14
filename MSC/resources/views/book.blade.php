@@ -105,7 +105,14 @@
                
             
                 <div class="mt-3">
-                  <button type="submit" class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn" >SIGN UP</button>
+                  @if(DB::table('slots')->where('status','opened')->count() == 0)
+                  <button type="submit" class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn" disabled >Book a slot</button>
+                  @else
+                  <button type="submit" class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn" >Book a slot</button> 
+                  @endif
+                 
+
+
                 </div>
                 <div class="text-center mt-4 font-weight-light">
                   Already have an account? <a href="/login" class="text-primary">Login</a>
