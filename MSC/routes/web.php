@@ -170,37 +170,90 @@ Route::get('/book', function(){
     return view('book');
  });
 
- Route::post('/book', function(){
+ Route::post('/book', function(Request $request){
+
+    $slot_id = $request->input('slot');
+
+    DB::table('books')->insert([
+       'slot_id' => $request->input('slot'),
+       'first_name' => $request->input('first_name'),
+       'last_name' => $request->input('last_name'),
+       'email' => $request->input('email'),
+       'address' => $request->input('address'),
+       'phone' => $request->input('phone'),
+       'role' => $request->input('role'),
+       'created_at'=> Carbon::now(),
+    ]);
+
+    $service_name = DB::table('slots')->where('id',$request->input('slot'))->value('title');
+    $service_date = DB::table('slots')->where('id',$request->input('slot'))->value('date');
+
+    //dd($service_date);
+
+    //send sms
+    try {
+        $to = $request->input('phone');
+        $from = getenv("TWILIO_FROM");
+        $message = 'Hello '.$request->input('name').', You have reserve a seat to attend '.$service_name.' on '.$service_date.', please kindly look out for another email on Thursday to confirm your availability. Thank you';
+        //open connection
     
-    return view('book');
+        $ch = curl_init();
+    
+        //set the url, number of POST vars, POST data
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_USERPWD, getenv("TWILIO_SID").':'.getenv("TWILIO_TOKEN"));
+        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
+        curl_setopt($ch, CURLOPT_URL, sprintf('https://api.twilio.com/2010-04-01/Accounts/'.getenv("TWILIO_SID").'/Messages.json', getenv("TWILIO_SID")));
+        curl_setopt($ch, CURLOPT_POST, 3);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, 'To='.$to.'&From='.$from.'&Body='.$message);
+    
+        // execute post
+        $result = curl_exec($ch);
+        $result = json_decode($result);
+       // dd($result);
+        // close connection
+        curl_close($ch);
+        //Sending message ends here
+    }
+    catch(Exception $e) {
+
+       
+
+    }
+
+
+    //send mail
+    try{
+        $details = [
+            'title' =>DB::table('slots')->where('id',$slot_id)->value('title'),
+            'date' =>DB::table('slots')->where('id',$slot_id)->value('date'),
+            'first_name' =>$request->input('first_name'),
+            'slot_id'=>$slot_id,
+            'email'=>$request->input('email'),
+            
+
+           
+        ];
+    
+       Mail::to($request->input('email'))->send(new TestMail($details));
+    }catch(Exception $e){
+
+    }
+
+
+    return view('thankyou');
 
  });
 
 
- Route::get('sms', function () {
-     
-    $to = "+2349028814649";
-    $from = getenv("TWILIO_FROM");
-    $message = 'Hey testing sms service from the web enjoy';
-    //open connection
+ Route::get('/confirm/{email}/{slot_id}', function ($email,$slot_id) {
 
-    $ch = curl_init();
+    DB::table('books')->where('email',$email)->where('slot_id',$slot_id)->update([
+      'confirm'=>true
+    ]);
 
-    //set the url, number of POST vars, POST data
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_USERPWD, getenv("TWILIO_SID").':'.getenv("TWILIO_TOKEN"));
-    curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
-    curl_setopt($ch, CURLOPT_URL, sprintf('https://api.twilio.com/2010-04-01/Accounts/'.getenv("TWILIO_SID").'/Messages.json', getenv("TWILIO_SID")));
-    curl_setopt($ch, CURLOPT_POST, 3);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, 'To='.$to.'&From='.$from.'&Body='.$message);
-
-    // execute post
-    $result = curl_exec($ch);
-    $result = json_decode($result);
-    dd($result);
-    // close connection
-    curl_close($ch);
-    //Sending message ends here
+    return view('confirm')
+      
 
  });
 

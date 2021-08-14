@@ -45,8 +45,8 @@
                 <div class="alert alert-danger">{{session('error')}}</div>
             @endif
           </div>
-              <h4>Hello! glad that you booked</h4>
-              <h6 class="font-weight-light">You will recieve an email and sms on Thurday, to confirm if you will be available.</h6>
+              <h4>Hello! glad that you confirm</h4>
+              <h6 class="font-weight-light">Will be glad to see you for the service.</h6>
               
             </div>
           </div>

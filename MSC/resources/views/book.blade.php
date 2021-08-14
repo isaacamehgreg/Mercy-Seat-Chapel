@@ -59,7 +59,7 @@
               <label for="slot">Select the Sunday you want to attend</label>
                  <select name="slot" class="form-control form-control-lg" id="exampleFormControlSelect2">
                   @foreach (DB::table('slots')->where('status','opened')->get() as $slot)
-                  <option value="{{$slot->id}}">{{$slot->name}}</option>
+                  <option value="{{$slot->id}}">{{$slot->title}} on {{$slot->date}}</option>
                   @endforeach
                 </select>
                
@@ -72,23 +72,21 @@
              </div>
              
                 <div class="form-group">
-                  <input type="text" name="name" required class="form-control form-control-lg" id="exampleInputUsername1" placeholder="Full Name">
+                  <input type="text" name="first_name" required class="form-control form-control-lg" id="exampleInputUsername1" placeholder="Fisrt Name">
                 </div>
                 <div class="form-group">
-                  <input type="email" name="email" required class="form-control form-control-lg" id="exampleInputEmail1" placeholder="Email">
+                  <input type="text" name="last_name" required class="form-control form-control-lg" id="exampleInputUsername1" placeholder="Last Name">
                 </div>
                 <div class="form-group">
-                  <input type="text" required class="form-control form-control-lg" id="phone" name="phone" placeholder="Phone">
+                  <input type="email" name="email" required class="form-control form-control-lg" id="exampleInputEmail1" placeholder="eg isaacamehgreg@gmail.com">
+                </div>
+                <div class="form-group">
+                  <input type="tel" required class="form-control form-control-lg" id="phone" name="phone" placeholder="eg +15124003931">
                 </div>
                 <div class="form-group">
                   <input type="text" required class="form-control form-control-lg" id="address" name="address"  placeholder="Address">
                 </div>
-                <div class="form-group">
-                  <input type="password"required  name="password"  class="form-control form-control-lg" id="exampleInputPassword1" placeholder="Password">
-                </div>
-                <div class="form-group">
-                  <input type="password"required  name="password_confirmation" class="form-control form-control-lg" id="exampleInputPassword1" placeholder=" Confirm Password">
-                </div>
+                
                 <div class="form-group">
                
                   <select name="role" class="form-control form-control-lg" id="exampleFormControlSelect2">

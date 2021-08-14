@@ -9,12 +9,25 @@
 
 </head>
 <body>
-    <h1>{{$details['title']}}</h1>
-    <h3>hi {{Auth::user()->name}}</h3>
-    <h3>{{$details['body']}}</h3>
-  
-    <h1><a  href="/yes/{{$details['body']}}">YES</a>  |  <a href="/no/{{$details['body']}}">No</a></h1>
+    @if ($details['type'] == 'booking')
+    <h3>Hello {{$details['first_name']}}</h3>
+    <br>
+    <h3>You have reserve a seat to attend {{$details['title']}} on {{$details['date']}}, please kindly look out for another email on Thursday to confirm your availability.</h3> 
+    <br>
+    <h3>Thank you</h3>
+    <h3>Mercy Seat Chapel</h3>
+        
+    @else
+    <h3>Hello {{$details['first_name']}}</h3>
+    <br>
+    <h3>Please kindly confirm your registration to attend {{$details['title']}},</h3>
+    <br>
+    <a href="http://baseurl.com/confirm/{{$details['email']}}/{{$details['slot_id']}}"><button>Confirm Now</button></a>
+    <br>
+    <h3>Thank you</h3>
+    <h3>Mercy Seat Chapel</h3>
+    
+    @endif
 
-    <h4>Thank You</h4>
 </body>
 </html>
