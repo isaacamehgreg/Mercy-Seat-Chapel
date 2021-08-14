@@ -68,13 +68,13 @@
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <ul class="nav">
 
-          <li class="nav-item">
-            <a class="nav-link" href="/">
+          {{-- <li class="nav-item">
+            <a class="nav-link" href="/admin">
               <i class="mdi mdi-home menu-icon"></i>
               <span class="menu-title">Dashboard</span>
             </a>
-          </li>
-          <li class="nav-item">
+          </li> --}}
+          {{-- <li class="nav-item">
             <a class="nav-link" href="/slots">
               <i class="mdi mdi-content-paste menu-icon"></i>
               <span class="menu-title">Slots</span>
@@ -86,7 +86,7 @@
               <i class="mdi mdi-account-multiple-outline menu-icon"></i>
               <span class="menu-title">Users</span>
             </a>
-          </li>
+          </li> --}}
 
         </ul>
       </nav>
@@ -133,13 +133,13 @@
                             <h5 class="mr-2 mb-0">{{DB::table('slots')->where('status','closed')->count()}}</h5>
                           </div>
                         </div>
-                        <div class="d-flex border-md-right flex-grow-1 align-items-center justify-content-center p-3 item">
+                        {{-- <div class="d-flex border-md-right flex-grow-1 align-items-center justify-content-center p-3 item">
                           <i class="mdi mdi-account-multiple-outline mr-3 icon-lg text-success"></i>
                           <div class="d-flex flex-column justify-content-around">
                             <small class="mb-1 text-muted">Total Members</small>
                             <h5 class="mr-2 mb-0">{{DB::table('users')->where('role','worker')->orWhere('role','visitor')->count()}}</h5>
                           </div>
-                        </div>
+                        </div> --}}
                         
                       </div>
                     </div>
@@ -186,12 +186,22 @@
                           </td> --}}
                           <td>{{$slot->slot}}</td>
                           <td>{{DB::table('attendees')->where('sunday_id',$slot->id)->count()}}</td>
+
                           <td>{{$slot->date}}</td>
                           @if ($slot->status == 'closed')
                           <td><label class="badge badge-danger">{{$slot->status}}</label></td>
                           @else
                           <td><label class="badge badge-success">{{$slot->status}}</label></td>
                           @endif
+
+                          <td><button class="btn btn-warning"  data-toggle="modal" data-target="#exampleModalCenter{{$slot->id}}">Manage</button></td>
+                          <td><button class="btn btn-info"  data-toggle="modal" data-target="#ModalCenter{{$slot->id}}">View Attendees</button></td>
+
+                        
+                          
+                         
+                          
+
                   
                         </tr>
                    
@@ -270,6 +280,131 @@
       </div>
     </div>
   </div>
+
+
+
+  @foreach ($slots as $slot)
+  <div class="modal fade" id="exampleModalCenter{{$slot->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title" id="exampleModalCenterTitle">Update or Delete slot </h3>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="/slot/update/{{$slot->id}}" method="post">@csrf
+        <div class="modal-body">
+          <div class="card-body">
+      
+            </p>
+            <div class="form-group">
+              <label>Title</label>
+              <input type="text" name="title" value="{{$slot->title}}" class="form-control form-control-lg" placeholder="eg thanksgiving sunday" required aria-label="Username">
+            </div>
+            <div class="form-group">
+              <label>Date</label>
+              <input type="datetime-local" name="date" value="{{$slot->date}}" class="form-control" placeholder="{{$slot->date}}" required aria-label="Username">
+
+            </div>
+            <div class="form-group">
+              <label>Slot Space</label>
+              <input type="number" name="slot" value="{{$slot->slot}}" class="form-control form-control-sm" required placeholder="Allocate Slot" aria-label="Username">
+            </div>
+          </div>
+        </div>
+         <div class="modal-footer row justify-content-lg-between">
+          <a class="btn btn-danger" href="/slot/delete/{{$slot->id}}" >Delete</a>
+
+          @if ($slot->id == 'closed')
+          <a class="btn btn-warning" href="/slot/open/{{$slot->id}}" >Reopen Slot</a> 
+          @else
+          <a class="btn btn-warning" href="/slot/close/{{$slot->id}}" >Close Slot</a>
+          @endif
+          
+
+          <button class="btn btn-primary" type="submit" >Update</button>
+         
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>
+  @endforeach
+
+
+  @foreach ($slots as $slot)
+  <div class="modal fade" id="ModalCenter{{$slot->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        
+        <div class="modal-header">
+          <h3 class="modal-title" id="exampleModalCenterTitle">{{DB::table('books')->where('slot_id', $slot->id)->count()}} </h3>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+    
+        <div class="modal-body">
+
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                
+                  <th>First Name</th>
+                 
+                  <th>Last Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Address</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+
+                @foreach (DB::table('books')->where('slot_id', $slot->id)->get() as $book)
+                    
+              
+                <tr>
+                  <td>{{$book->first_name}}</td>
+               
+                  <td>{{$book->last_name}}</td>
+                  <td>{{$book->email}}</td>
+                  <td>{{$book->phone}}</td>
+                  <td>{{$book->address}}</td>
+                    @if ($book->confirmed == false)
+                    <td><label class="badge badge-danger">Not Yet Confirmed</label></td>
+                    @else
+                    <td><label class="badge badge-success">Confirmed</label></td>
+                    @endif
+                 
+                </tr>
+                @endforeach
+             
+                            
+              </tbody>
+            </table>
+         
+          </div>
+          
+
+        </div>
+ 
+
+        <div class="modal-footer row justify-content-lg-between">
+       
+         
+        </div>
+    
+      </div>
+    </div>
+  </div>
+  @endforeach
+
+
+
 
 
 

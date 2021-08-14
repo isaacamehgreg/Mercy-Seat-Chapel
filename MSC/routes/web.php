@@ -43,7 +43,7 @@ Route::get('/slot', function(Request $request){
 
     return view('admindash')->with(['slots' => $slots ]);
  });
- 
+
 
 //admin create slots
 Route::post('/slot', function(Request $request){
@@ -52,7 +52,7 @@ Route::post('/slot', function(Request $request){
        'date' =>$request->input('date'),
        'slot' =>$request->input('slot'),
        'status'=>'opened',
-       'created_at'=> Carbon::now()    
+       'created_at'=> Carbon::now()
    ]);
    return redirect('/slot');
 });
@@ -64,7 +64,7 @@ Route::post('/slot/update/{id}', function(Request $request, $id){
         'date' =>$request->input('date'),
         'slot' =>$request->input('slot'),
         'status'=>'opened',
-        'created_at'=> Carbon::now() 
+        'created_at'=> Carbon::now()
     ]);
     return redirect('/slots');
  });
@@ -92,7 +92,7 @@ Route::get('/slots', function(Request $request){
     return redirect('/');
     }
 
-    $slots = DB::table('slots')->paginate(15); 
+    $slots = DB::table('slots')->paginate(15);
     return view('adminslot')->with(['slots' => $slots ]);
 
  });
@@ -107,12 +107,12 @@ Route::get('/users', function(Request $request){
 
 
 
- 
+
 ////////////////////////////////////////////////////////////////////User Route
 Route::get('user', function () {
     $user= DB::table('users')->where('id',Auth::user()->id)->first();
     $slots = DB::table('slots')->where('status','opened')->get();
-    $attendees = DB::table('attendees')->where('user_id',Auth::user()->id)->paginate(10); 
+    $attendees = DB::table('attendees')->where('user_id',Auth::user()->id)->paginate(10);
     return view('userdash')->with([
         'user' => $user,
         'slots'=>$slots,
@@ -144,7 +144,7 @@ Route::get('/attend/{slot_id}', function(Request $request, $slot_id){
         'user_id' =>Auth::user()->id,
         'sunday_id' =>$slot_id,
         'is_confirmed' => false,
-        'created_at'=> Carbon::now()    
+        'created_at'=> Carbon::now()
     ]);
 
     //send mail
@@ -155,8 +155,8 @@ Route::get('/attend/{slot_id}', function(Request $request, $slot_id){
         'body' =>'Tank you for book for this service we will notify you by thursday to know if you will be able to make it or not'
     ];
    Mail::to(Auth::user()->email)->send(new TestMail($details));
-  
-   
+
+
     return redirect('/');
  });
 
@@ -166,7 +166,7 @@ Route::get('/mail', [MailController::class, 'sendEmail']);
 
 
 Route::get('/book', function(){
-    
+
     return view('book');
  });
 
@@ -194,11 +194,11 @@ Route::get('/book', function(){
     try {
         $to = $request->input('phone');
         $from = getenv("TWILIO_FROM");
-        $message = 'Hello '.$request->input('name').', You have reserve a seat to attend '.$service_name.' on '.$service_date.', please kindly look out for another email on Thursday to confirm your availability. Thank you';
+        $message = 'Hello '.$request->input('first_name').', You have reserve a seat to attend '.$service_name.' on '.$service_date.', please kindly look out for another email on Thursday to confirm your availability. Thank you';
         //open connection
-    
+
         $ch = curl_init();
-    
+
         //set the url, number of POST vars, POST data
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_USERPWD, getenv("TWILIO_SID").':'.getenv("TWILIO_TOKEN"));
@@ -206,7 +206,7 @@ Route::get('/book', function(){
         curl_setopt($ch, CURLOPT_URL, sprintf('https://api.twilio.com/2010-04-01/Accounts/'.getenv("TWILIO_SID").'/Messages.json', getenv("TWILIO_SID")));
         curl_setopt($ch, CURLOPT_POST, 3);
         curl_setopt($ch, CURLOPT_POSTFIELDS, 'To='.$to.'&From='.$from.'&Body='.$message);
-    
+
         // execute post
         $result = curl_exec($ch);
         $result = json_decode($result);
@@ -217,7 +217,7 @@ Route::get('/book', function(){
     }
     catch(Exception $e) {
 
-       
+
 
     }
 
@@ -230,11 +230,11 @@ Route::get('/book', function(){
             'first_name' =>$request->input('first_name'),
             'slot_id'=>$slot_id,
             'email'=>$request->input('email'),
-            
 
-           
+
+
         ];
-    
+
        Mail::to($request->input('email'))->send(new TestMail($details));
     }catch(Exception $e){
 
@@ -249,12 +249,20 @@ Route::get('/book', function(){
  Route::get('/confirm/{email}/{slot_id}', function ($email,$slot_id) {
 
     DB::table('books')->where('email',$email)->where('slot_id',$slot_id)->update([
-      'confirm'=>true
+      'confirmed'=>true
     ]);
 
-    return view('confirm')
-      
+    return view('confirm');
+
 
  });
 
- 
+
+ Route::get('day', function () {
+     $day =Carbon::today()->format('l');
+     $hour = Carbon::now()->format('H');
+     if($day=='Thurday' && $hour == "5")
+     {
+
+     }
+ });
